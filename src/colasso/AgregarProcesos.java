@@ -18,21 +18,22 @@ import java.util.Random;
  */
 public class AgregarProcesos extends Thread {
 
-    public AgregarProcesos(Cola c,Control control,ArrayList<String[]> gantt) {
+    public AgregarProcesos(Cola c, Control control, ArrayList<String[]> gantt) {
         this.cola = c;
-        this.control=control;
-        this.lista=gantt;
-        
+        this.control = control;
+        this.lista = gantt;
+        this.hiloEspera = new PintarEspera(this.control);
+
     }
 
     private int contProcesos = 0, tLlegada = 0, tRafaga, espera;
     private Random rand = new Random();
     private Cola cola;
-    private boolean bandera=false;
+    private boolean bandera = false, banderaHilo = true;
     private Control control;
     private ArrayList<String[]> lista;
-
-    
+    private int tiempoFilaAgregar = -1;
+    private PintarEspera hiloEspera;
 
     public void crearProcesos() throws InterruptedException {
 
@@ -40,9 +41,17 @@ public class AgregarProcesos extends Thread {
         tRafaga = rand.nextInt(15) + 1;
         espera = rand.nextInt(15) + 4;
         cola.agregar(cola.getProcesador(), contProcesos, tLlegada, tRafaga);
-        String[] datos=new String[] {String.valueOf(contProcesos),String.valueOf(tLlegada),String.valueOf(tRafaga),"0","0","0"};
-        String[] datosGantt=new String[]{String.valueOf(contProcesos)};
+        String[] datos = new String[]{String.valueOf(contProcesos), String.valueOf(tLlegada), String.valueOf(tRafaga), "0", "0", "0"};
+        String[] datosGantt = new String[]{String.valueOf(contProcesos)};
         lista.add(datos);
+//   
+        hiloEspera.setTiempoLlegada(tLlegada);
+        hiloEspera.setTiempoRafaga(tRafaga);
+        hiloEspera.setContProcesos(contProcesos);
+//    
+        if (banderaHilo) {
+            iniciarHilo();
+        }
         //while(espera>tRafaga){
         //    espera=rand.nextInt(10)+1;
         //}
@@ -55,8 +64,22 @@ public class AgregarProcesos extends Thread {
         //System.out.println("************************************************");
         control.actualizarTabla(lista);
         control.actualizarTablaGantt(datosGantt);
-        Thread.sleep((espera * 1000));
+        aumentarTiempo(espera);
+        //Thread.sleep((espera * 1000)); no funciona
 
+    }
+
+    public void iniciarHilo() {
+        hiloEspera.start();
+        banderaHilo = false;
+    }
+
+    public void aumentarTiempo(int espera) throws InterruptedException {
+        for (int i = 0; i < espera; i++) {
+            tiempoFilaAgregar += 1;
+            System.out.println("tiempo Agregar: " + tiempoFilaAgregar);
+            Thread.sleep(1000);
+        }
     }
 
     public boolean isBandera() {
@@ -66,8 +89,6 @@ public class AgregarProcesos extends Thread {
     public void setBandera(boolean bandera) {
         this.bandera = bandera;
     }
-    
-   
 
     public ArrayList<String[]> getLista() {
         return lista;
@@ -78,6 +99,7 @@ public class AgregarProcesos extends Thread {
     }
 
     public void run() {
+
         while (true) {
             try {
                 crearProcesos();

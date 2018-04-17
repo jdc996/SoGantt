@@ -22,6 +22,7 @@ public class EjecutarProcesos extends Thread {
     private Control control;
     private int ejecucion = 5, contador = 1, tiempoFila = 0;
     private String[] datosGantt;
+    private boolean estado = true;
 
     public EjecutarProcesos(Cola c, Control con, ArrayList<String[]> gantt) {
         this.cola = c;
@@ -38,11 +39,13 @@ public class EjecutarProcesos extends Thread {
             int columna = cola.getProcesador().getSiguiente().getTiempoLlegada();
 
             //         actualizarTabla(true);
-            
             pintarGantt(ejecucion, fila, tiempoFila);
+            //pintarGanttEspera(ejecucion, fila, columna);
+
             //Thread.sleep((ejecucion));
             //           actualizarTabla(false);
             datosGantt = cola.atender();
+            //pintarGanttEspera(Integer.parseInt(datosGantt[4]), fila, columna);
             gantt.set(Integer.parseInt(datosGantt[0]) - 1, datosGantt);
             control.actualizarFila(datosGantt[3], Integer.parseInt(datosGantt[0]) - 1, 3);
             control.actualizarFila(datosGantt[4], Integer.parseInt(datosGantt[0]) - 1, 4);
@@ -52,6 +55,7 @@ public class EjecutarProcesos extends Thread {
             //    System.out.println(Arrays.toString(s));
             //}
             System.out.println("**************************************************");
+            
             if (datosGantt != null) {
                 //ejecucion = Integer.parseInt(datosGantt[2]);  
             }
@@ -62,11 +66,24 @@ public class EjecutarProcesos extends Thread {
     }
 
     public void pintarGantt(int tiempo, int fila, int columna) throws InterruptedException {
-        for (int i = 1000; i <= tiempo; i += 1000) {
+        
+        
+        for (int i = 1000 ; i <= tiempo; i += 1000) {
             Thread.sleep(1000);
             control.actualizarFilaGantt("Ejecutando", fila, columna);
             columna++;
             aumentarTiempo();
+            //System.out.println(tiempoFila);
+        }
+        //pintarGanttEspera(tiempo, fila, columna);
+    }
+
+    public void pintarGanttEspera(int tiempo, int fila, int columna) throws InterruptedException {
+        //if (estado = true) {
+            for (int i = 0; i < tiempo; i += 1) {
+                control.actualizarFilaGanttEspera("Espera", fila, columna);
+                columna++;
+          //  }
             //System.out.println(tiempoFila);
         }
     }

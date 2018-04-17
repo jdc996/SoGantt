@@ -59,4 +59,9 @@ public class Control implements ActionListener {
         
             vista.getGantt().setValueAt(color, fila-1, columna + 1);     
     }
+    public void actualizarFilaGanttEspera(String color, int fila, int columna) {
+        
+            vista.getGantt().setValueAt(color, fila-1, columna + 1);     
+    }
+    
 }
