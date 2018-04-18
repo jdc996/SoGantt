@@ -22,58 +22,55 @@ public class AgregarProcesos extends Thread {
         this.cola = c;
         this.control = control;
         this.lista = gantt;
-        this.hiloEspera = new PintarEspera(this.control);
+        //this.hiloEspera = new PintarEspera(this.control);
 
     }
 
     private int contProcesos = 0, tLlegada = 0, tRafaga, espera;
     private Random rand = new Random();
     private Cola cola;
-    private boolean bandera = false, banderaHilo = true;
+//    private boolean bandera = false;
+    //private boolean banderaHilo = true;
     private Control control;
     private ArrayList<String[]> lista;
     private int tiempoFilaAgregar = -1;
-    private PintarEspera hiloEspera;
+    //private PintarEspera hiloEspera;
 
     public void crearProcesos() throws InterruptedException {
-
+        //La variable contProcesos almacena el numero del proceso que se crea
         contProcesos += 1;
         tRafaga = rand.nextInt(15) + 1;
         espera = rand.nextInt(15) + 4;
+        
+        //Se añade el proceso nuevo a la cola
         cola.agregar(cola.getProcesador(), contProcesos, tLlegada, tRafaga);
+        //Se añaden los datos del nuevo proceso a una listat y se añaden a una lista que almacena todos los procesos
         String[] datos = new String[]{String.valueOf(contProcesos), String.valueOf(tLlegada), String.valueOf(tRafaga), "0", "0", "0"};
         String[] datosGantt = new String[]{String.valueOf(contProcesos)};
         lista.add(datos);
 //   
-        hiloEspera.setTiempoLlegada(tLlegada);
-        hiloEspera.setTiempoRafaga(tRafaga);
-        hiloEspera.setContProcesos(contProcesos);
-//    
-        if (banderaHilo) {
-            iniciarHilo();
-        }
-        //while(espera>tRafaga){
-        //    espera=rand.nextInt(10)+1;
-        //}
+//        hiloEspera.setTiempoLlegada(tLlegada);
+//        hiloEspera.setTiempoRafaga(tRafaga);
+//        hiloEspera.setContProcesos(contProcesos);
+////    
+//        if (banderaHilo) {
+//            iniciarHilo();
+//        }
+       
         tLlegada += espera;
-        //lista = cola.imprimir(cola.getProcesador());
-        //System.out.println("*************PROCESO AGREGADDO******************");
-        //for (String[] s : lista) {
-        //    System.out.println(Arrays.toString(s));
-        //}
-        //System.out.println("************************************************");
+        //Pinta en la vista el nuevo proceso creado
         control.actualizarTabla(lista);
         control.actualizarTablaGantt(datosGantt);
+        //el hilo se duerme un tiempo aleatorio hasta que se cree un nuevo proceso
         aumentarTiempo(espera);
         //Thread.sleep((espera * 1000)); no funciona
 
     }
 
-    public void iniciarHilo() {
-        hiloEspera.start();
-        banderaHilo = false;
-    }
-
+//    public void iniciarHilo() {
+//        hiloEspera.start();
+//        banderaHilo = false;
+//    }
     public void aumentarTiempo(int espera) throws InterruptedException {
         for (int i = 0; i < espera; i++) {
             tiempoFilaAgregar += 1;
@@ -82,12 +79,26 @@ public class AgregarProcesos extends Thread {
         }
     }
 
-    public boolean isBandera() {
-        return bandera;
-    }
-
-    public void setBandera(boolean bandera) {
-        this.bandera = bandera;
+//    public boolean isBandera() {
+//        return bandera;
+//    }
+//
+//    public void setBandera(boolean bandera) {
+//        this.bandera = bandera;
+//    }
+    public void iniciar() {
+        int procesoIncial = 0;
+        while (procesoIncial != 2) {
+            contProcesos += 1;
+            tRafaga = rand.nextInt(15) + 1;
+            cola.agregar(cola.getProcesador(), contProcesos, tLlegada, tRafaga);
+            String[] datos = new String[]{String.valueOf(contProcesos), String.valueOf(tLlegada), String.valueOf(tRafaga), "0", "0", "0"};
+            String[] datosGantt = new String[]{String.valueOf(contProcesos)};
+            lista.add(datos);
+            control.actualizarTabla(lista);
+            control.actualizarTablaGantt(datosGantt);
+            procesoIncial++;
+        }
     }
 
     public ArrayList<String[]> getLista() {
@@ -99,7 +110,7 @@ public class AgregarProcesos extends Thread {
     }
 
     public void run() {
-
+        iniciar();
         while (true) {
             try {
                 crearProcesos();

@@ -29,6 +29,8 @@ public class Vista extends javax.swing.JFrame {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
+            
+            
         };
         String[] columnasGantt = {"Proceso"};
         gantt = new DefaultTableModel(columnasGantt, 0) {
@@ -41,6 +43,7 @@ public class Vista extends javax.swing.JFrame {
         jTableGantt.setModel(gantt);
         jTableGantt.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         jTableGantt.setDefaultRenderer(Object.class, new CambiarColorGantt());
+        
         for (int i = 1; i < 1000; i++) {
             gantt.addColumn(i);
         }
@@ -142,6 +145,7 @@ public class Vista extends javax.swing.JFrame {
         ));
         jTableGantt.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         jTableGantt.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jTableGantt.setRowSelectionAllowed(true);
         jScrollPane3.setViewportView(jTableGantt);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
